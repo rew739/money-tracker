@@ -1,0 +1,100 @@
+// สคีมาฐานข้อมูลสำหรับเว็บทำบัญชีรายจ่ายรายเดือน
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ผู้ใช้
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  currency     String   @default("THB")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  accounts     Account[]
+  categories   Category[]
+  transactions Transaction[]
+  budgets      Budget[]
+}
+
+// กระเป๋าเงิน/บัญชี
+model Account {
+  id             String        @id @default(cuid())
+  userId         String
+  name           String
+  type           String        @default("cash") // cash | bank | credit | ewallet
+  initialBalance Float         @default(0)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions   Transaction[]
+
+  @@index([userId])
+}
+
+// หมวดหมู่รายรับ/รายจ่าย
+model Category {
+  id        String        @id @default(cuid())
+  userId    String?
+  name      String
+  type      String        // income | expense
+  color     String        @default("#6366f1")
+  icon      String        @default("💰")
+  isDefault Boolean       @default(false) // หมวดหมู่เริ่มต้นสำหรับทุกคน (userId = null)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  budgets      Budget[]
+
+  @@index([userId])
+}
+
+// รายการธุรกรรม (หัวใจของระบบ)
+model Transaction {
+  id         String   @id @default(cuid())
+  userId     String
+  accountId  String
+  categoryId String?
+  type       String   // income | expense | transfer
+  amount     Float
+  date       DateTime
+  note       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account  Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([userId, date])
+  @@index([categoryId])
+}
+
+// งบประมาณต่อหมวด/เดือน
+model Budget {
+  id         String   @id @default(cuid())
+  userId     String
+  categoryId String
+  month      String   // รูปแบบ YYYY-MM เช่น 2026-06
+  limit      Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, categoryId, month])
+  @@index([userId])
+}
