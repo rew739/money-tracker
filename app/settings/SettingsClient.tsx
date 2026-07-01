@@ -45,45 +45,45 @@ export default function SettingsClient({ user }: { user: User }) {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">⚙️ ตั้งค่า</h1>
+      <h1 className="text-2xl font-bold text-ink-900">ตั้งค่า</h1>
 
       {/* ข้อมูลผู้ใช้ */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <h2 className="text-lg font-semibold mb-4">👤 ข้อมูลส่วนตัว</h2>
+      <div className="card p-6">
+        <h2 className="text-lg font-semibold text-ink-900 mb-4">ข้อมูลส่วนตัว</h2>
         <div className="space-y-3">
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-500 w-24">ชื่อ:</span>
-            <span className="font-medium">{user.name}</span>
+            <span className="text-sm text-ink-500 w-24">ชื่อ:</span>
+            <span className="font-medium text-ink-900">{user.name}</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-500 w-24">อีเมล:</span>
-            <span className="font-medium">{user.email}</span>
+            <span className="text-sm text-ink-500 w-24">อีเมล:</span>
+            <span className="font-medium text-ink-900">{user.email}</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-500 w-24">สกุลเงิน:</span>
-            <span className="font-medium">{user.currency}</span>
+            <span className="text-sm text-ink-500 w-24">สกุลเงิน:</span>
+            <span className="font-medium text-ink-900">{user.currency}</span>
           </div>
         </div>
       </div>
 
       {/* บัญชี/กระเป๋าเงิน */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <h2 className="text-lg font-semibold mb-4">👛 บัญชี / กระเป๋าเงิน</h2>
+      <div className="card p-6">
+        <h2 className="text-lg font-semibold text-ink-900 mb-4">บัญชี / กระเป๋าเงิน</h2>
         <div className="space-y-3 mb-4">
           {accounts.map((acc) => (
-            <div key={acc.id} className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
+            <div key={acc.id} className="flex items-center justify-between bg-sage-50 rounded-2xl px-4 py-3">
               <div className="flex items-center gap-3">
-                <span className="text-lg">
+                <span className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-lg shadow-sm">
                   {acc.type === "cash" ? "💵" : acc.type === "bank" ? "🏦" : acc.type === "credit" ? "💳" : "📱"}
                 </span>
                 <div>
-                  <p className="text-sm font-medium">{acc.name}</p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-sm font-medium text-ink-900">{acc.name}</p>
+                  <p className="text-xs text-ink-400">
                     {acc.type === "cash" ? "เงินสด" : acc.type === "bank" ? "ธนาคาร" : acc.type === "credit" ? "บัตรเครดิต" : "e-Wallet"}
                   </p>
                 </div>
               </div>
-              <span className="text-sm font-semibold text-indigo-600">
+              <span className="text-sm font-semibold text-sage-700">
                 ฿{acc.balance.toLocaleString("th-TH", { minimumFractionDigits: 2 })}
               </span>
             </div>
@@ -97,13 +97,13 @@ export default function SettingsClient({ user }: { user: User }) {
             value={newAccountName}
             onChange={(e) => setNewAccountName(e.target.value)}
             placeholder="ชื่อบัญชี"
-            className="px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="input text-sm"
             required
           />
           <select
             value={newAccountType}
             onChange={(e) => setNewAccountType(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="input text-sm"
           >
             <option value="cash">💵 เงินสด</option>
             <option value="bank">🏦 ธนาคาร</option>
@@ -116,24 +116,21 @@ export default function SettingsClient({ user }: { user: User }) {
             onChange={(e) => setNewAccountBalance(e.target.value)}
             placeholder="ยอดเริ่มต้น"
             step="0.01"
-            className="px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="input text-sm"
           />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors"
-          >
+          <button type="submit" className="btn-primary px-4 py-2 text-sm">
             + เพิ่ม
           </button>
         </form>
       </div>
 
-      {/* ออกจากระบบ */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-red-100">
-        <h2 className="text-lg font-semibold text-red-600 mb-3">🚪 ออกจากระบบ</h2>
-        <p className="text-sm text-gray-500 mb-4">การออกจากระบบจะล้าง session ปัจจุบัน</p>
+      {/* ออกจากระบบ — rose หม่น ไม่ใช่แดงจัด */}
+      <div className="card p-6 border-expense-100">
+        <h2 className="text-lg font-semibold text-expense-700 mb-3">🚪 ออกจากระบบ</h2>
+        <p className="text-sm text-ink-500 mb-4">การออกจากระบบจะล้าง session ปัจจุบัน</p>
         <button
           onClick={handleLogout}
-          className="px-6 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 transition-colors"
+          className="px-6 py-2 bg-expense-500 text-white rounded-full text-sm font-medium hover:bg-expense-600 transition-colors"
         >
           ออกจากระบบ
         </button>

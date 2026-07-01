@@ -1,9 +1,157 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Design System: "Sage Twilight"
+   โทนสีเพื่อความสบายตา (อ้างอิงงานวิจัยสรีรวิทยาสายตา)
+   หลักการ: ลด saturation + White tinting + Earth-tone balancing
+   กฎ: 80/20 (พื้นฐาน low-sat) + 60-30-10 (พื้นหลัง/การ์ด/เน้น)
+   ============================================================ */
+
+@theme {
+  /* --- Sage Twilight palette --- */
+  /* พื้นหลังครีม-เบจ (60%) */
+  --color-cream-50: #fdfbf6;
+  --color-cream-100: #faf7f0;
+  --color-cream-200: #f2ede3;
+  --color-cream-300: #e9e1d3;
+
+  /* Sage เขียวหม่น (30% พื้นผิว + 10% เน้น) */
+  --color-sage-50: #f3f6f1;
+  --color-sage-100: #e6ede2;
+  --color-sage-200: #d3dfcd;
+  --color-sage-300: #b6c8ad;
+  --color-sage-400: #95ad88;
+  --color-sage-500: #6b8e7f;
+  --color-sage-600: #587968;
+  --color-sage-700: #4f6f5e;
+  --color-sage-800: #3f594c;
+  --color-sage-900: #344840;
+
+  /* รายรับ — เขียวหม่น (low saturation) */
+  --color-income-50: #eef5ef;
+  --color-income-100: #d8e8db;
+  --color-income-500: #7ba780;
+  --color-income-600: #5f8d65;
+  --color-income-700: #4a7350;
+
+  /* รายจ่าย — ชมพู-แดงดินเผา (แทนแดงสด → ลดคลื่นยาวที่ทำตาล้า) */
+  --color-expense-50: #f7eeec;
+  --color-expense-100: #f0deda;
+  --color-expense-500: #c97b6b;
+  --color-expense-600: #b56454;
+  --color-expense-700: #9a4f41;
+
+  /* คงเหลือ/เน้น — amber หม่น */
+  --color-gold-500: #c4a25f;
+  --color-gold-600: #ab8c4c;
+
+  /* ตัวอักษร (แทนดำจัด → ลดคอนทราสต์รุนแรง) */
+  --color-ink-900: #3d3a35;
+  --color-ink-700: #5a554e;
+  --color-ink-500: #8a857c;
+  --color-ink-400: #a8a299;
+}
+
 :root {
   --font-noto-thai: "Noto Sans Thai", sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--font-noto-thai), system-ui, sans-serif;
+  /* White tinting: พื้นหลังครีมอบอุ่น สบายตา */
+  background-color: var(--color-cream-100);
+  color: var(--color-ink-900);
+}
+
+/* Soft scrollbar สี sage */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-cream-100);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-sage-200);
+  border-radius: 9999px;
+  border: 2px solid var(--color-cream-100);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-sage-300);
+}
+
+/* ============================================================
+   Component classes — ใช้ทั่วทั้งเว็บ
+   ============================================================ */
+@layer components {
+  /* การ์ด: ขาวนวล rounded-3xl + soft sage shadow + border pastel
+     (Color washing: ลดแสงสะท้อนจ้า) */
+  .card {
+    background-color: #ffffff;
+    border: 1px solid var(--color-sage-100);
+    border-radius: 1.5rem;
+    box-shadow: 0 1px 2px rgba(79, 111, 94, 0.04),
+      0 4px 16px rgba(79, 111, 94, 0.06);
+  }
+
+  /* ปุ่มหลัก: sage เข้ม pill */
+  .btn-primary {
+    background-color: var(--color-sage-600);
+    color: #ffffff;
+    border-radius: 9999px;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+  }
+  .btn-primary:hover {
+    background-color: var(--color-sage-700);
+  }
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+
+  /* ปุ่มรอง: ghost */
+  .btn-ghost {
+    background-color: var(--color-sage-50);
+    color: var(--color-sage-700);
+    border-radius: 9999px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+  .btn-ghost:hover {
+    background-color: var(--color-sage-100);
+  }
+
+  /* Input: rounded-2xl + focus ring sage */
+  .input {
+    width: 100%;
+    background-color: #ffffff;
+    border: 1px solid var(--color-cream-300);
+    border-radius: 1rem;
+    padding: 0.5rem 0.875rem;
+    color: var(--color-ink-900);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .input::placeholder {
+    color: var(--color-ink-400);
+  }
+  .input:focus {
+    border-color: var(--color-sage-400);
+    box-shadow: 0 0 0 3px rgba(107, 142, 127, 0.15);
+  }
+
+  /* Pill (badge / tag) */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
 }

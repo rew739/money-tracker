@@ -20,7 +20,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th" className={`${notoThai.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-gray-50 text-gray-900">
+      {/* body: พื้นหลังครีม-sage อบอุ่น (White tinting + Earth-tone) */}
+      <body className="min-h-full flex flex-col bg-cream-100 text-ink-900">
         {children}
       </body>
     </html>

@@ -135,58 +135,51 @@ export default function TransactionsClient({ categories: initialCategories, acco
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">💸 รายการรายรับ-รายจ่าย</h1>
+      <h1 className="text-2xl font-bold text-ink-900">รายการรายรับ-รายจ่าย</h1>
 
       {/* ฟอร์มเพิ่ม/แก้ไข */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-        <h2 className="text-lg font-semibold mb-4">
+      <div className="card p-5">
+        <h2 className="text-lg font-semibold text-ink-900 mb-4">
           {editing ? "✏️ แก้ไขรายการ" : "➕ เพิ่มรายการใหม่"}
         </h2>
         <form ref={formRef} onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* ประเภท */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">ประเภท</label>
-            <select
-              name="type"
-              className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-              required
-            >
+            <label className="block text-sm font-medium text-ink-700 mb-1.5">ประเภท</label>
+            <select name="type" className="input" required>
               <option value="expense">รายจ่าย</option>
               <option value="income">รายรับ</option>
             </select>
           </div>
           {/* จำนวนเงิน */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">จำนวนเงิน (฿)</label>
+            <label className="block text-sm font-medium text-ink-700 mb-1.5">จำนวนเงิน (฿)</label>
             <input
               type="number"
               name="amount"
               step="0.01"
               min="0.01"
-              className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="input"
               placeholder="0.00"
               required
             />
           </div>
           {/* วันที่ */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">วันที่</label>
+            <label className="block text-sm font-medium text-ink-700 mb-1.5">วันที่</label>
             <input
               type="date"
               name="date"
               defaultValue={today}
               max={today}
-              className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="input"
               required
             />
           </div>
           {/* หมวดหมู่ */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">หมวดหมู่</label>
-            <select
-              name="categoryId"
-              className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-            >
+            <label className="block text-sm font-medium text-ink-700 mb-1.5">หมวดหมู่</label>
+            <select name="categoryId" className="input">
               <option value="">-- เลือกหมวดหมู่ --</option>
               {initialCategories.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -197,12 +190,8 @@ export default function TransactionsClient({ categories: initialCategories, acco
           </div>
           {/* บัญชี */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">บัญชี/กระเป๋า</label>
-            <select
-              name="accountId"
-              className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
-              required
-            >
+            <label className="block text-sm font-medium text-ink-700 mb-1.5">บัญชี/กระเป๋า</label>
+            <select name="accountId" className="input" required>
               {initialAccounts.map((a) => (
                 <option key={a.id} value={a.id}>
                   {a.type === "cash" ? "💵" : a.type === "bank" ? "🏦" : a.type === "credit" ? "💳" : "📱"} {a.name}
@@ -212,27 +201,24 @@ export default function TransactionsClient({ categories: initialCategories, acco
           </div>
           {/* หมายเหตุ */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">หมายเหตุ (optional)</label>
+            <label className="block text-sm font-medium text-ink-700 mb-1.5">หมายเหตุ (optional)</label>
             <input
               type="text"
               name="note"
-              className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="input"
               placeholder="รายละเอียด..."
             />
           </div>
           {/* ปุ่ม */}
           <div className="flex gap-2 items-end">
-            <button
-              type="submit"
-              className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors"
-            >
+            <button type="submit" className="btn-primary flex-1 px-4 py-2 text-sm">
               {editing ? "💾 บันทึกการแก้ไข" : "➕ เพิ่มรายการ"}
             </button>
             {editing && (
               <button
                 type="button"
                 onClick={cancelEdit}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-300 transition-colors"
+                className="btn-ghost px-4 py-2 text-sm"
               >
                 ยกเลิก
               </button>
@@ -246,7 +232,7 @@ export default function TransactionsClient({ categories: initialCategories, acco
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
+          className="input !w-auto !rounded-full text-sm py-1.5"
         >
           <option value="all">ทั้งหมด</option>
           <option value="income">รายรับ</option>
@@ -256,55 +242,60 @@ export default function TransactionsClient({ categories: initialCategories, acco
           type="month"
           value={filterMonth}
           onChange={(e) => setFilterMonth(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
+          className="input !w-auto !rounded-full text-sm py-1.5"
         />
         {(filterType !== "all" || filterMonth) && (
           <button
             onClick={() => { setFilterType("all"); setFilterMonth(""); }}
-            className="text-sm text-indigo-600 hover:underline"
+            className="text-sm text-sage-700 hover:underline"
           >
             ล้างตัวกรอง
           </button>
         )}
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-ink-500">
           {transactions.length} รายการ
         </span>
       </div>
 
       {/* รายการธุรกรรม */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 divide-y divide-gray-100">
+      <div className="card divide-y divide-sage-50 overflow-hidden">
         {loading ? (
-          <div className="text-center py-12 text-gray-400">กำลังโหลด...</div>
+          <div className="text-center py-12 text-ink-400">กำลังโหลด...</div>
         ) : transactions.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">ไม่มีรายการ</div>
+          <div className="text-center py-12">
+            <div className="text-3xl mb-2 opacity-60">🍃</div>
+            <p className="text-ink-400">ไม่มีรายการ</p>
+          </div>
         ) : (
           transactions.map((t) => (
-            <div key={t.id} className="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors">
+            <div key={t.id} className="flex items-center justify-between px-5 py-4 hover:bg-sage-50/50 transition-colors">
               <div className="flex items-center gap-3 min-w-0">
-                <span className="text-xl flex-shrink-0">{t.category?.icon || (t.type === "income" ? "💰" : "💸")}</span>
+                <span className="w-10 h-10 rounded-full bg-sage-50 flex items-center justify-center text-lg flex-shrink-0">
+                  {t.category?.icon || (t.type === "income" ? "💰" : "💸")}
+                </span>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium truncate">{t.note || t.category?.name || t.type}</p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-sm font-medium text-ink-900 truncate">{t.note || t.category?.name || t.type}</p>
+                  <p className="text-xs text-ink-400">
                     {t.category?.name} • {t.account?.name} •{" "}
                     {new Date(t.date).toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric" })}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-3 flex-shrink-0 ml-3">
-                <span className={`text-sm font-semibold ${t.type === "income" ? "text-green-600" : "text-red-600"}`}>
+                <span className={`text-sm font-semibold ${t.type === "income" ? "text-income-600" : "text-expense-600"}`}>
                   {t.type === "income" ? "+" : "-"}{formatCurrency(t.amount)}
                 </span>
                 <div className="flex gap-1">
                   <button
                     onClick={() => startEdit(t)}
-                    className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                    className="p-1.5 text-ink-400 hover:text-sage-700 hover:bg-sage-50 rounded-lg transition-colors"
                     title="แก้ไข"
                   >
                     ✏️
                   </button>
                   <button
                     onClick={() => handleDelete(t.id)}
-                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-1.5 text-ink-400 hover:text-expense-600 hover:bg-expense-50 rounded-lg transition-colors"
                     title="ลบ"
                   >
                     🗑️

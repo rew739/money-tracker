@@ -11,18 +11,18 @@ async function main() {
     // รายรับ
     { name: "เงินเดือน", type: "income", color: "#10b981", icon: "💼", isDefault: true },
     { name: "รายได้เสริม", type: "income", color: "#22c55e", icon: "💵", isDefault: true },
-    { name: "ของขวัญ", type: "income", color: "#84cc16", icon: "🎁", isDefault: true },
-    { name: "อื่นๆ (รายรับ)", type: "income", color: "#a3e635", icon: "➕", isDefault: true },
-    // รายจ่าย
-    { name: "อาหาร", type: "expense", color: "#ef4444", icon: "🍔", isDefault: true },
-    { name: "เดินทาง", type: "expense", color: "#f97316", icon: "🚗", isDefault: true },
-    { name: "ช้อปปิ้ง", type: "expense", color: "#ec4899", icon: "🛍️", isDefault: true },
-    { name: "ที่อยู่อาศัย", type: "expense", color: "#8b5cf6", icon: "🏠", isDefault: true },
-    { name: "บิลค่าใช้จ่าย", type: "expense", color: "#06b6d4", icon: "🧾", isDefault: true },
-    { name: "สุขภาพ", type: "expense", color: "#f59e0b", icon: "💊", isDefault: true },
-    { name: "ความบันทิง", type: "expense", color: "#d946ef", icon: "🎬", isDefault: true },
-    { name: "การศึกษา", type: "expense", color: "#3b82f6", icon: "📚", isDefault: true },
-    { name: "อื่นๆ (รายจ่าย)", type: "expense", color: "#64748b", icon: "📦", isDefault: true },
+    { name: "ของขวัญ", type: "income", color: "#7ba780", icon: "🎁", isDefault: true },
+    { name: "อื่นๆ (รายรับ)", type: "income", color: "#8a857c", icon: "➕", isDefault: true },
+    // รายจ่าย (โทน earth/sage หม่น เพื่อความสบายตา)
+    { name: "อาหาร", type: "expense", color: "#c97b6b", icon: "🍔", isDefault: true },
+    { name: "เดินทาง", type: "expense", color: "#c4a25f", icon: "🚗", isDefault: true },
+    { name: "ช้อปปิ้ง", type: "expense", color: "#af7c9b", icon: "🛍️", isDefault: true },
+    { name: "ที่อยู่อาศัย", type: "expense", color: "#6f8caf", icon: "🏠", isDefault: true },
+    { name: "บิลค่าใช้จ่าย", type: "expense", color: "#5f8d8a", icon: "🧾", isDefault: true },
+    { name: "สุขภาพ", type: "expense", color: "#a8a06b", icon: "💊", isDefault: true },
+    { name: "ความบันเทิง", type: "expense", color: "#8a7caf", icon: "🎬", isDefault: true },
+    { name: "การศึกษา", type: "expense", color: "#6b8e7f", icon: "📚", isDefault: true },
+    { name: "อื่นๆ (รายจ่าย)", type: "expense", color: "#9b7c6b", icon: "📦", isDefault: true },
   ];
 
   for (const cat of defaultCategories) {
