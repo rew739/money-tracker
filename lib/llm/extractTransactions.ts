@@ -32,6 +32,7 @@ export interface ExtractResult {
   ambiguous: boolean; // มีรายการกำกวม ต้องถามยืนยัน
   followUpQuestion?: string; // คำถามถามกลับ (ถ้า ambiguous)
   message: string; // ข้อความสรุปสั้น ๆ สำหรับผู้ใช้
+  usedMock?: boolean; // ผลนี้มาจาก mock (ตั้งใจหรือ GLM ล้มแล้ว fallback) — ให้ UI แสดง banner ได้
 }
 
 // ------------------------------------------------------------
@@ -68,10 +69,16 @@ const CATEGORY_KEYWORDS: Record<string, string> = {
   ของขวัญ: "ของขวัญ",
 };
 
+// เรียง keyword จากยาวไปสั้น เพื่อให้คำเฉพาะเจาะจงชนะคำที่เป็น substring ของมัน
+// (เช่น "น้ำมัน" → เดินทาง ต้อง match ก่อน "น้ำ" → อาหาร)
+const SORTED_KEYWORDS = Object.entries(CATEGORY_KEYWORDS).sort(
+  (a, b) => b[0].length - a[0].length
+);
+
 function matchCategory(word: string, categories: CategoryInfo[]): string | undefined {
   const lower = word.toLowerCase();
   // 1) ตรงกับ keyword map → หาชื่อหมวดในรายการผู้ใช้
-  for (const [kw, catName] of Object.entries(CATEGORY_KEYWORDS)) {
+  for (const [kw, catName] of SORTED_KEYWORDS) {
     if (lower.includes(kw)) {
       const found = categories.find(
         (c) => c.name === catName || c.name.includes(catName)
@@ -151,6 +158,7 @@ function mockExtract(
         ambiguous: true,
         followUpQuestion: `บันทึก ${onlyNumber[1]} บาทใช่ไหม? เป็นค่าอาหารหรือเปล่า? 🤔`,
         message: "ไม่แน่ใจหมวดหมู่ ช่วยยืนยันหน่อย",
+        usedMock: true,
       };
     }
   }
@@ -160,6 +168,7 @@ function mockExtract(
       transactions: [],
       ambiguous: false,
       message: "ยังไม่เข้าใจ ลองพิมพ์ เช่น 'ข้าว 90 น้ำ 20 รถ 40'",
+      usedMock: true,
     };
   }
 
@@ -171,6 +180,7 @@ function mockExtract(
       ? "บางรายการไม่แน่ใจหมวดหมู่ ยืนยันได้ไหม?"
       : undefined,
     message: `เข้าใจแล้ว! ${txs.length} รายการ รวม ฿${total.toLocaleString("th-TH")}`,
+    usedMock: true,
   };
 }
 

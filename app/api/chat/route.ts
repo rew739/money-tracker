@@ -72,14 +72,14 @@ export async function POST(request: Request) {
         question: result.followUpQuestion,
         message: result.followUpQuestion,
         transactions: [],
-        mockMode: IS_MOCK_MODE,
+        mockMode: IS_MOCK_MODE || Boolean(result.usedMock),
       });
     }
     return NextResponse.json({
       understood: true,
       message: result.message,
       transactions: [],
-      mockMode: IS_MOCK_MODE,
+      mockMode: IS_MOCK_MODE || Boolean(result.usedMock),
     });
   }
 
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
       understood: true,
       message: "อ่านไม่เข้าใจ ลองพิมพ์ใหม่อีกครั้งได้ไหม? 🙏",
       transactions: [],
-      mockMode: IS_MOCK_MODE,
+      mockMode: IS_MOCK_MODE || Boolean(result.usedMock),
     });
   }
 
@@ -118,7 +118,7 @@ export async function POST(request: Request) {
       draft: draftForClient,
       question: result.followUpQuestion || "บางรายการไม่แน่ใจหมวดหมู่ ยืนยันได้ไหม?",
       message: result.message,
-      mockMode: IS_MOCK_MODE,
+      mockMode: IS_MOCK_MODE || Boolean(result.usedMock),
     });
   }
 
@@ -148,7 +148,7 @@ export async function POST(request: Request) {
     message: `✅ บันทึก ${created.length} รายการ รวม ฿${total.toLocaleString(
       "th-TH"
     )}`,
-    mockMode: IS_MOCK_MODE,
+    mockMode: IS_MOCK_MODE || Boolean(result.usedMock),
   });
 }
 

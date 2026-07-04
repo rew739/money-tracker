@@ -36,9 +36,10 @@ export async function POST(request: Request) {
   });
   const validAccountIds = new Set(accounts.map((a) => a.id));
 
-  // ตรวจสอบว่า categoryId ทั้งหมดเป็นของผู้ใช้จริง
+  // ตรวจสอบว่า categoryId เป็นของผู้ใช้ หรือเป็นหมวดเริ่มต้นของระบบ (userId = null)
+  // — หมวดส่วนใหญ่ที่ใช้จริงคือหมวดเริ่มต้น ถ้าเช็คแค่ของผู้ใช้จะโดนล้างเป็น null หมด
   const categories = await prisma.category.findMany({
-    where: { userId: user.id },
+    where: { OR: [{ userId: user.id }, { userId: null, isDefault: true }] },
     select: { id: true },
   });
   const validCategoryIds = new Set(categories.map((c) => c.id));
