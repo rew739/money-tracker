@@ -8,6 +8,7 @@ import { useState } from "react";
 
 const navLinks = [
   { href: "/", label: "แดชบอร์ด", icon: "📊" },
+  { href: "/chat", label: "แชท", icon: "💬" },
   { href: "/transactions", label: "รายการ", icon: "💸" },
   { href: "/reports", label: "รายงาน", icon: "📈" },
   { href: "/categories", label: "หมวดหมู่", icon: "🏷️" },
