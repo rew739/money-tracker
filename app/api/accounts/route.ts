@@ -12,32 +12,26 @@ export async function GET() {
     orderBy: { createdAt: "asc" },
   });
 
-  // คำนวณยอดคงเหลือล่าสุดสำหรับแต่ละบัญชี
-  const accountsWithBalance = await Promise.all(
-    accounts.map(async (acc) => {
-      const result = await prisma.transaction.aggregate({
-        where: { accountId: acc.id, type: { in: ["income", "expense"] } },
-        _sum: { amount: true },
-      });
-      const totalIncome = (
-        await prisma.transaction.aggregate({
-          where: { accountId: acc.id, type: "income" },
-          _sum: { amount: true },
-        })
-      )._sum.amount || 0;
-      const totalExpense = (
-        await prisma.transaction.aggregate({
-          where: { accountId: acc.id, type: "expense" },
-          _sum: { amount: true },
-        })
-      )._sum.amount || 0;
+  // คำนวณยอดคงเหลือทุกบัญชีด้วย query เดียว (เดิมยิง 2 query ต่อบัญชี)
+  // กรอง userId ด้วย กันรายการของ user อื่นที่ชี้บัญชีเรามาปนในยอด
+  const sums = await prisma.transaction.groupBy({
+    by: ["accountId", "type"],
+    where: { userId: user.id, type: { in: ["income", "expense"] } },
+    _sum: { amount: true },
+  });
 
-      return {
-        ...acc,
-        balance: acc.initialBalance + totalIncome - totalExpense,
-      };
-    })
-  );
+  const accountsWithBalance = accounts.map((acc) => {
+    const totalIncome =
+      sums.find((s) => s.accountId === acc.id && s.type === "income")?._sum
+        .amount || 0;
+    const totalExpense =
+      sums.find((s) => s.accountId === acc.id && s.type === "expense")?._sum
+        .amount || 0;
+    return {
+      ...acc,
+      balance: acc.initialBalance + totalIncome - totalExpense,
+    };
+  });
 
   return NextResponse.json(accountsWithBalance);
 }

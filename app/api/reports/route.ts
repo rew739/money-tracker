@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import {
+  thaiToday,
+  thaiMonthRange,
+  thaiDayRange,
+  thaiMonthKey,
+  thaiDayKey,
+} from "@/lib/dates";
 
 // GET /api/reports?month=YYYY-MM - ข้อมูลสำหรับกราฟและรายงาน
 export async function GET(request: NextRequest) {
@@ -10,18 +17,17 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const monthParam = searchParams.get("month");
 
-  // คำนวณช่วงเดือน
-  const now = new Date();
-  const year = monthParam ? parseInt(monthParam.split("-")[0]) : now.getFullYear();
-  const month = monthParam ? parseInt(monthParam.split("-")[1]) : now.getMonth() + 1;
-  const start = new Date(year, month - 1, 1);
-  const end = new Date(year, month, 0, 23, 59, 59);
+  // คำนวณช่วงเดือนตามเวลาไทย (server อาจรันเป็น UTC)
+  const today = thaiToday();
+  const year = monthParam ? parseInt(monthParam.split("-")[0]) : today.year;
+  const month = monthParam ? parseInt(monthParam.split("-")[1]) : today.month;
+  const { start, end } = thaiMonthRange(year, month);
 
   // ดึงธุรกรรมทั้งหมดในเดือนที่เลือก
   const transactions = await prisma.transaction.findMany({
     where: {
       userId: user.id,
-      date: { gte: start, lte: end },
+      date: { gte: start, lt: end },
     },
     include: { category: true },
   });
@@ -72,16 +78,24 @@ export async function GET(request: NextRequest) {
   }
 
   // เปรียบเทียบ 6 เดือนล่าสุด (สำหรับกราฟแท่ง)
+  // ดึงครั้งเดียวทั้งช่วงแล้วจัดกลุ่มในหน่วยความจำ (เดิมยิง 6 query ใน loop)
+  const sixMonthsStart = thaiMonthRange(year, month - 5).start;
+  const compTx = await prisma.transaction.findMany({
+    where: { userId: user.id, date: { gte: sixMonthsStart, lt: end } },
+    select: { type: true, amount: true, date: true },
+  });
+
   const monthlyComparison: { month: string; income: number; expense: number; balance: number }[] = [];
   for (let i = 5; i >= 0; i--) {
-    const mStart = new Date(year, month - 1 - i, 1);
-    const mEnd = new Date(year, month - i, 0, 23, 59, 59);
-    const monthLabel = `${mStart.toLocaleDateString("th-TH", { month: "short" })} ${mStart.getFullYear() + 543}`;
+    // ตัวแทนเดือน (ใช้ UTC ล้วน เพื่อให้ label ไม่ขึ้นกับ timezone ของ server)
+    const mDate = new Date(Date.UTC(year, month - 1 - i, 1));
+    const mKey = mDate.getUTCFullYear() * 12 + mDate.getUTCMonth();
+    const monthLabel = `${mDate.toLocaleDateString("th-TH", {
+      month: "short",
+      timeZone: "UTC",
+    })} ${mDate.getUTCFullYear() + 543}`;
 
-    const mTx = await prisma.transaction.findMany({
-      where: { userId: user.id, date: { gte: mStart, lte: mEnd } },
-    });
-
+    const mTx = compTx.filter((t) => thaiMonthKey(t.date) === mKey);
     const mIncome = mTx.filter((t) => t.type === "income").reduce((s, t) => s + t.amount, 0);
     const mExpense = mTx.filter((t) => t.type === "expense").reduce((s, t) => s + t.amount, 0);
 
@@ -93,17 +107,31 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  // แนวโน้มรายวัน (30 วันล่าสุด)
+  // แนวโน้มรายวัน 30 วัน — อิงเดือนที่เลือก (เดิมอิงวันนี้เสมอ และยิง 30 query ใน loop)
+  // เดือนปัจจุบัน: นับถอยหลังจากวันนี้ / เดือนอื่น: นับถอยหลังจากวันสุดท้ายของเดือนนั้น
+  const isCurrentMonth = year === today.year && month === today.month;
+  const anchorDay = isCurrentMonth
+    ? { year: today.year, month: today.month, day: today.day }
+    : { year, month, day: new Date(Date.UTC(year, month, 0)).getUTCDate() };
+
+  const trendStart = thaiDayRange(anchorDay.year, anchorDay.month, anchorDay.day - 29).start;
+  const trendEnd = thaiDayRange(anchorDay.year, anchorDay.month, anchorDay.day).end;
+  const trendTx = await prisma.transaction.findMany({
+    where: { userId: user.id, date: { gte: trendStart, lt: trendEnd } },
+    select: { type: true, amount: true, date: true },
+  });
+
   const dailyTrend: { date: string; income: number; expense: number }[] = [];
   for (let i = 29; i >= 0; i--) {
-    const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
-    const dayEnd = new Date(dayStart.getFullYear(), dayStart.getMonth(), dayStart.getDate(), 23, 59, 59);
-    const dayLabel = dayStart.toLocaleDateString("th-TH", { day: "numeric", month: "short" });
-
-    const dayTx = await prisma.transaction.findMany({
-      where: { userId: user.id, date: { gte: dayStart, lte: dayEnd } },
+    const dayDate = new Date(Date.UTC(anchorDay.year, anchorDay.month - 1, anchorDay.day - i));
+    const dayKey = dayDate.toISOString().slice(0, 10);
+    const dayLabel = dayDate.toLocaleDateString("th-TH", {
+      day: "numeric",
+      month: "short",
+      timeZone: "UTC",
     });
 
+    const dayTx = trendTx.filter((t) => thaiDayKey(t.date) === dayKey);
     dailyTrend.push({
       date: dayLabel,
       income: dayTx.filter((t) => t.type === "income").reduce((s, t) => s + t.amount, 0),
